@@ -1,21 +1,69 @@
+document.addEventListener("DOMContentLoaded", function () {
+  const dojoBtn = document.getElementById("dojoBtn");
+  const trainBtn = document.getElementById("trainBtn");
 
-document.addEventListener("DOMContentLoaded", () => {
-  const dojoBtn = document.querySelector("#dojoBtn") || document.querySelector(".btn-primary");
-  const trainBtn = document.querySelector("#trainBtn") || document.querySelector(".btn-secondary");
+  if (dojoBtn) {
+    dojoBtn.addEventListener("click", function () {
+      const speciesSection = document.getElementById("species");
+      if (speciesSection) {
+        speciesSection.scrollIntoView({ behavior: "smooth" });
+      }
+    });
+  }
 
-  if (dojoBtn) dojoBtn.addEventListener("click", () => {
-    const target = document.querySelector("#species");
-    if (target) target.scrollIntoView({ behavior: "smooth" });
-  });
+  if (trainBtn) {
+    trainBtn.addEventListener("click", function () {
+      const trackerSection = document.getElementById("tracker");
+      if (trackerSection) {
+        trackerSection.scrollIntoView({ behavior: "smooth" });
+      }
+    });
+  }
 
-  if (trainBtn) trainBtn.addEventListener("click", () => {
-    const target = document.querySelector("#tracker");
-    if (target) target.scrollIntoView({ behavior: "smooth" });
-  });
+  const askBtn = document.getElementById("askBtn");
 
-  const logsBox = document.querySelector("#careLogs");
-  const saveBtn = document.querySelector("#saveLogBtn");
-  const clearBtn = document.querySelector("#clearLogsBtn");
+  if (askBtn) {
+    askBtn.addEventListener("click", function () {
+      const questionBox = document.getElementById("question");
+      const responseBox = document.getElementById("response");
+
+      if (!questionBox || !responseBox) return;
+
+      const question = questionBox.value.toLowerCase();
+
+      let answer =
+        "Start by checking sunlight, watering, drainage, soil moisture, pests, and recent weather changes.";
+
+      if (question.includes("yellow")) {
+        answer =
+          "Yellow leaves can come from overwatering, poor drainage, low light, nutrient issues, or seasonal change. First check if the soil is staying wet too long.";
+      } else if (question.includes("brown") || question.includes("dry")) {
+        answer =
+          "Brown or dry foliage can come from underwatering, heat stress, root damage, or too much afternoon sun. Check soil moisture and recent heat exposure.";
+      } else if (question.includes("juniper")) {
+        answer =
+          "Junipers need outdoor full sun and good airflow. They should not be kept indoors long term.";
+      } else if (question.includes("bald cypress")) {
+        answer =
+          "Bald Cypress loves full sun and consistent moisture. It is excellent for Louisiana and humid Gulf Coast conditions.";
+      } else if (question.includes("prune") || question.includes("cut")) {
+        answer =
+          "Before pruning, choose the front, trunk line, and main branches. Remove crossing, downward, weak, or cluttered growth first. Do not remove too much at once.";
+      } else if (question.includes("repot")) {
+        answer =
+          "Many temperate bonsai are repotted near bud swell in late winter or early spring. Tropical bonsai are usually safer when actively growing.";
+      } else if (question.includes("water")) {
+        answer =
+          "Water thoroughly until water drains from the bottom. Do not water only by schedule; check soil moisture, pot size, tree species, sun, and weather.";
+      }
+
+      responseBox.textContent = answer;
+    });
+  }
+
+  const saveLogBtn = document.getElementById("saveLogBtn");
+  const clearLogsBtn = document.getElementById("clearLogsBtn");
+  const careLogs = document.getElementById("careLogs");
 
   function getLogs() {
     return JSON.parse(localStorage.getItem("bonsaiLogs") || "[]");
@@ -26,93 +74,72 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderLogs() {
-    if (!logsBox) return;
+    if (!careLogs) return;
+
     const logs = getLogs();
 
-    if (!logs.length) {
-      logsBox.innerHTML = "<p>No bonsai logs saved yet.</p>";
+    if (logs.length === 0) {
+      careLogs.innerHTML = "<p>No bonsai logs saved yet.</p>";
       return;
     }
 
-    logsBox.innerHTML = logs.map(log => `
-      <div class="log-entry">
-        <small>${log.date}</small>
-        <h3>${log.tree || "Unnamed Tree"} — ${log.action}</h3>
-        <p><strong>Species:</strong> ${log.species}</p>
-        <p>${log.notes || "No notes added."}</p>
-      </div>
-    `).join("");
+    careLogs.innerHTML = logs
+      .map(
+        function (log) {
+          return `
+            <div class="log-entry">
+              <small>${log.date}</small>
+              <h3>${log.tree} — ${log.action}</h3>
+              <p><strong>Species:</strong> ${log.species}</p>
+              <p>${log.notes}</p>
+            </div>
+          `;
+        }
+      )
+      .join("");
   }
 
-  if (saveBtn) saveBtn.addEventListener("click", () => {
-    const log = {
-      tree: document.querySelector("#treeName")?.value || "Unnamed Tree",
-      species: document.querySelector("#speciesSelect")?.value || "Unknown",
-      action: document.querySelector("#careAction")?.value || "Care Update",
-      notes: document.querySelector("#careNotes")?.value || "",
-      date: new Date().toLocaleString()
-    };
+  if (saveLogBtn) {
+    saveLogBtn.addEventListener("click", function () {
+      const treeName = document.getElementById("treeName");
+      const speciesSelect = document.getElementById("speciesSelect");
+      const careAction = document.getElementById("careAction");
+      const careNotes = document.getElementById("careNotes");
 
-    const logs = getLogs();
-    logs.unshift(log);
-    saveLogs(logs);
+      const log = {
+        tree: treeName ? treeName.value || "Unnamed Tree" : "Unnamed Tree",
+        species: speciesSelect ? speciesSelect.value : "Unknown",
+        action: careAction ? careAction.value : "Care Update",
+        notes: careNotes ? careNotes.value || "No notes added." : "No notes added.",
+        date: new Date().toLocaleString()
+      };
 
-    if (document.querySelector("#treeName")) document.querySelector("#treeName").value = "";
-    if (document.querySelector("#careNotes")) document.querySelector("#careNotes").value = "";
+      const logs = getLogs();
+      logs.unshift(log);
+      saveLogs(logs);
 
-    renderLogs();
-  });
+      if (treeName) treeName.value = "";
+      if (careNotes) careNotes.value = "";
 
-  if (clearBtn) clearBtn.addEventListener("click", () => {
-    if (confirm("Clear all saved bonsai logs on this device?")) {
-      localStorage.removeItem("bonsaiLogs");
       renderLogs();
-    }
-  });
+    });
+  }
+
+  if (clearLogsBtn) {
+    clearLogsBtn.addEventListener("click", function () {
+      const confirmClear = confirm("Clear all saved bonsai logs on this device?");
+
+      if (confirmClear) {
+        localStorage.removeItem("bonsaiLogs");
+        renderLogs();
+      }
+    });
+  }
 
   renderLogs();
 
-  const askBtn = document.querySelector("#askBtn");
-  if (askBtn) askBtn.addEventListener("click", () => {
-    const question = (document.querySelector("#question")?.value || "").toLowerCase();
-    const response = document.querySelector("#response");
-    if (!response) return;
-
-    let answer = "Start by checking sunlight, watering, drainage, soil moisture, pests, and recent weather changes.";
-
-    if (question.includes("yellow")) {
-      answer = "Yellow leaves can come from overwatering, poor drainage, low light, nutrient issues, or normal seasonal change. First check if the soil is staying wet too long.";
-    } else if (question.includes("brown") || question.includes("dry")) {
-      answer = "Brown or dry foliage can come from underwatering, heat stress, root damage, or too much afternoon sun. Check soil moisture and recent heat exposure.";
-    } else if (question.includes("juniper")) {
-      answer = "Junipers need outdoor full sun and good airflow. They should not be kept indoors long term.";
-    } else if (question.includes("bald cypress")) {
-      answer = "Bald Cypress loves full sun and consistent moisture. It is excellent for Louisiana and humid Gulf Coast conditions.";
-    } else if (question.includes("prune") || question.includes("cut")) {
-      answer = "Before pruning, choose the front, trunk line, and main branches. Remove crossing, downward, weak, or cluttered growth first. Do not remove too much at once.";
-    } else if (question.includes("repot")) {
-      answer = "Repotting depends on species. Many temperate bonsai are repotted near bud swell in late winter or early spring. Tropical bonsai are usually safer when actively growing.";
-    } else if (question.includes("water")) {
-      answer = "Water thoroughly until water drains from the bottom. Do not water only by schedule; check soil moisture, pot size, tree species, sun, and weather.";
-    }
-
-    response.textContent = answer;
-  });
-
-  console.log("Bonsai Sensei interactive upgrade loaded.");
+  console.log("Bonsai Sensei script loaded.");
 });
-
-        else if(question.includes("dropping")){
-            response.innerHTML =
-            "Leaf drop may be caused by stress, improper watering, or sudden environmental change.";
-        }
-
-        else if(question.includes("juniper")){
-            response.innerHTML =
-            "Junipers need outdoor sunlight and should not stay indoors long term.";
-        }
-
-        else if(question.includes("bald cypress")){
             response.innerHTML =
             "Bald Cypress bonsai love water and thrive in humid environments.";
         }

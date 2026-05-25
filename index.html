@@ -192,62 +192,31 @@
 
   </section>
 
-  <section class="tracker-section" id="tracker">
+<section class="tracker-section" id="tracker">
+  <div class="section-header">
+    <span class="section-tag">Bonsai Tracker</span>
+    <h2>Track Your Trees</h2>
+  </div>
 
-    <div class="section-header">
+  <div class="tracker-box">
+    <input type="text" id="treeName" placeholder="Tree Name">
 
-      <span class="section-tag">
-        Bonsai Tracker
-      </span>
+    <select id="careAction">
+      <option>Watered</option>
+      <option>Fertilized</option>
+      <option>Pruned</option>
+      <option>Repotted</option>
+      <option>Wired</option>
+      <option>Health Check</option>
+    </select>
 
-      <h2>
-        Track Your Trees
-      </h2>
+    <textarea id="careNotes" placeholder="Notes..."></textarea>
 
-    </div>
+    <button onclick="saveBonsaiLog()">Save Bonsai Journal</button>
 
-    <div class="tracker-box">
-
-      <input
-        type="text"
-        placeholder="Tree Name"
-      >
-
-      <select>
-
-        <option>
-          Select Species
-        </option>
-
-        <option>
-          Bald Cypress
-        </option>
-
-        <option>
-          Juniper
-        </option>
-
-        <option>
-          Japanese Maple
-        </option>
-
-        <option>
-          Bougainvillea
-        </option>
-
-      </select>
-
-      <textarea
-        placeholder="Notes..."
-      ></textarea>
-
-      <button>
-        Save Bonsai Journal
-      </button>
-
-    </div>
-
-  </section>
+    <div id="savedLogs"></div>
+  </div>
+</section>
 
   <section class="assistant-section" id="ai">
 

@@ -1,1 +1,15 @@
 
+.log-entry{
+  border-bottom:1px solid rgba(212,175,55,.18);
+  padding:16px 0;
+  text-align:left;
+}
+
+.log-entry small{
+  color:#f5d17a;
+}
+
+.log-entry h3{
+  color:#f5d17a;
+  margin:8px 0;
+}

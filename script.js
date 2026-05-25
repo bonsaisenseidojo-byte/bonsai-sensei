@@ -60,95 +60,51 @@ document.addEventListener("DOMContentLoaded", function () {
       responseBox.textContent = answer;
     });
   }
+function saveBonsaiLog() {
+  const treeName = document.getElementById("treeName").value || "Unnamed Tree";
+  const careAction = document.getElementById("careAction").value;
+  const careNotes = document.getElementById("careNotes").value || "No notes added.";
+  const date = new Date().toLocaleString();
 
-  const saveLogBtn = document.getElementById("saveLogBtn");
-  const clearLogsBtn = document.getElementById("clearLogsBtn");
-  const careLogs = document.getElementById("careLogs");
+  const log = {
+    treeName,
+    careAction,
+    careNotes,
+    date
+  };
 
-  function getLogs() {
-    return JSON.parse(localStorage.getItem("bonsaiLogs") || "[]");
+  let logs = JSON.parse(localStorage.getItem("bonsaiLogs")) || [];
+
+  logs.unshift(log);
+
+  localStorage.setItem("bonsaiLogs", JSON.stringify(logs));
+
+  document.getElementById("treeName").value = "";
+  document.getElementById("careNotes").value = "";
+
+  displayBonsaiLogs();
+}
+
+function displayBonsaiLogs() {
+  const savedLogs = document.getElementById("savedLogs");
+
+  if (!savedLogs) return;
+
+  let logs = JSON.parse(localStorage.getItem("bonsaiLogs")) || [];
+
+  if (logs.length === 0) {
+    savedLogs.innerHTML = "<p>No bonsai logs saved yet.</p>";
+    return;
   }
 
-  function saveLogs(logs) {
-    localStorage.setItem("bonsaiLogs", JSON.stringify(logs));
-  }
+  savedLogs.innerHTML = logs.map(log => `
+    <div class="log-entry">
+      <small>${log.date}</small>
+      <h3>${log.treeName}</h3>
+      <p><strong>Action:</strong> ${log.careAction}</p>
+      <p>${log.careNotes}</p>
+    </div>
+  `).join("");
+}
 
-  function renderLogs() {
-    if (!careLogs) return;
-
-    const logs = getLogs();
-
-    if (logs.length === 0) {
-      careLogs.innerHTML = "<p>No bonsai logs saved yet.</p>";
-      return;
-    }
-
-    careLogs.innerHTML = logs
-      .map(
-        function (log) {
-          return `
-            <div class="log-entry">
-              <small>${log.date}</small>
-              <h3>${log.tree} — ${log.action}</h3>
-              <p><strong>Species:</strong> ${log.species}</p>
-              <p>${log.notes}</p>
-            </div>
-          `;
-        }
-      )
-      .join("");
-  }
-
-  if (saveLogBtn) {
-    saveLogBtn.addEventListener("click", function () {
-      const treeName = document.getElementById("treeName");
-      const speciesSelect = document.getElementById("speciesSelect");
-      const careAction = document.getElementById("careAction");
-      const careNotes = document.getElementById("careNotes");
-
-      const log = {
-        tree: treeName ? treeName.value || "Unnamed Tree" : "Unnamed Tree",
-        species: speciesSelect ? speciesSelect.value : "Unknown",
-        action: careAction ? careAction.value : "Care Update",
-        notes: careNotes ? careNotes.value || "No notes added." : "No notes added.",
-        date: new Date().toLocaleString()
-      };
-
-      const logs = getLogs();
-      logs.unshift(log);
-      saveLogs(logs);
-
-      if (treeName) treeName.value = "";
-      if (careNotes) careNotes.value = "";
-
-      renderLogs();
-    });
-  }
-
-  if (clearLogsBtn) {
-    clearLogsBtn.addEventListener("click", function () {
-      const confirmClear = confirm("Clear all saved bonsai logs on this device?");
-
-      if (confirmClear) {
-        localStorage.removeItem("bonsaiLogs");
-        renderLogs();
-      }
-    });
-  }
-
-  renderLogs();
-
-  console.log("Bonsai Sensei script loaded.");
-});
-            response.innerHTML =
-            "Bald Cypress bonsai love water and thrive in humid environments.";
-        }
-
-        else{
-            response.innerHTML =
-            "AI Sensei is still training. Try asking about watering, yellow leaves, Juniper, or Bald Cypress.";
-        }
-
-    });
-
-});
+displayBonsaiLogs();
